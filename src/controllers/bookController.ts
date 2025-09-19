@@ -18,8 +18,42 @@ export const getAllBooks = (req: Request, res: Response): void => {
 
 export const addBook = (req: Request, res: Response): void => {
     try {
-        const newBook = req.body;
-        const createdBook = bookService.addBook(newBook);
+        // Destructure fields from request body
+        const { title, author, genre } = req.body;
+
+        // Trim whitespace from fields
+        const Title = title?.trim();
+        const Author = author?.trim();
+        const Genre = genre?.trim();
+
+        // Validate required fields
+        if (!Title || Title === '') {
+            res.status(HTTP_STATUS.BAD_REQUEST).json({
+                message: "Title is required and cannot be empty or whitespace only",
+            });
+            return;
+        }
+
+        if (!Author || Author === '') {
+            res.status(HTTP_STATUS.BAD_REQUEST).json({
+                message: "Author is required and cannot be empty or whitespace only",
+            });
+            return;
+        }
+
+        if (!Genre || Genre === '') {
+            res.status(HTTP_STATUS.BAD_REQUEST).json({
+                message: "Genre is required and cannot be empty or whitespace only",
+            });
+            return;
+        }
+
+        const createdBook = bookService.addBook({
+            title: Title,
+            author: Author,
+            genre: Genre,
+        });
+
         res.status(HTTP_STATUS.CREATED).json({
             message: "Book added",
             data: createdBook,
